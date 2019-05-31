@@ -2,11 +2,12 @@
 rng( 314159 );
 
 %% read component
-c = Component();
-c.legacy_run( which( 'bearing_block.stl' ) );
+[ fv.faces, fv.vertices ] = ...
+    CONVERT_meshformat( READ_stl( which( 'bearing_block.stl' ) ) );
+triangle_areas = compute_triangle_areas( fv );
 
 %% construct point cloud
-v = c.fv.vertices;
+v = fv.vertices;
 vpc = pointCloud( v );
 %pcshow( vpc );
 
@@ -28,8 +29,8 @@ vpc = pointCloud( v );
 
 desired_count = 1e6;
 points = sample_fv( ...
-    c.fv, ...
-    c.triangle_areas, ...
+    fv, ...
+    triangle_areas, ...
     desired_count ...
     );
 pp = pointCloud( points );
@@ -38,8 +39,8 @@ pcshow( pcdownsample( pp, 'random', 0.01 ) );
 %% sample again for moving representation
 desired_count = 1e4;
 points = sample_fv( ...
-    c.fv, ...
-    c.triangle_areas, ...
+    fv, ...
+    triangle_areas, ...
     desired_count ...
     );
 
@@ -108,7 +109,7 @@ fh = figure();
 fh.Color = 'w';
 axh = axes( fh );
 hold( axh, 'on' );
-ph = patch( axh, c.fv );
+ph = patch( axh, fv );
 ph.EdgeColor = 'none';
 ph.FaceAlpha = 0.5;
 ph.FaceColor = [ 0.9 0.9 0.9 ];
@@ -132,7 +133,7 @@ fh = figure();
 fh.Color = 'w';
 axh = axes( fh );
 hold( axh, 'on' );
-ph = patch( axh, c.fv );
+ph = patch( axh, fv );
 ph.EdgeColor = 'none';
 ph.FaceAlpha = 0.5;
 ph.FaceColor = [ 0.9 0.9 0.9 ];
